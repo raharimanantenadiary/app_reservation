@@ -1,0 +1,66 @@
+# docker-compose.yml
+
+services:
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_DB:       app_reservation
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/migrations/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql
+      - ./database/seeds/seed.sql:/docker-entrypoint-initdb.d/002_seed.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout:  5s
+      retries:  5
+
+  backend:
+    build:
+      context:    ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    environment:
+      PORT:        5000
+      DB_HOST:     postgres
+      DB_PORT:     5432
+      DB_NAME:     app_reservation
+      DB_USER:     postgres
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET:  ${JWT_SECRET}
+      APP_URL:     ${APP_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build:
+      context:    ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - type: bind
+        source: ./nginx/nginx.conf
+        target: /etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+  postgres_data:

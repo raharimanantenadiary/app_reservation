@@ -1,0 +1,25 @@
+{
+  "name": "app_reservation",
+  "version": "1.0.0",
+  "description": "\"# app_reservation\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raharimanantenadiary/app_reservation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/raharimanantenadiary/app_reservation/issues"
+  },
+  "homepage": "https://github.com/raharimanantenadiary/app_reservation#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "pg": "^8.21.0"
+  }
+}
